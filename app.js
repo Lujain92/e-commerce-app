@@ -8,7 +8,8 @@ const sequelize = require("./util/database");
 
 const session = require("express-session");
 const mysqlStore = require("express-mysql-session")(session);
-const csrf = require('csurf')
+const csrf = require('csurf');
+const flash = require('connect-flash')
 
 const options = {
   connectionLimit: 10,
@@ -51,6 +52,8 @@ app.use(
 );
 
 app.use(csrfProtection);
+app.use(flash());
+
 
 app.use((req, res, next) => {
   if (!req.session.user) {
