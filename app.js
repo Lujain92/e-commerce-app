@@ -8,6 +8,7 @@ const sequelize = require("./util/database");
 
 const session = require("express-session");
 const mysqlStore = require("express-mysql-session")(session);
+const csrf = require('csurf')
 
 const options = {
   connectionLimit: 10,
@@ -18,6 +19,8 @@ const options = {
   port: "3306",
   createDatabaseTable: false,
 };
+
+const csrfProtection = csrf();
 
 const sessionStore = new mysqlStore(options);
 const Product = require("./models/product");
@@ -47,6 +50,7 @@ app.use(
   })
 );
 
+app.use(csrfProtection);
 
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -58,6 +62,12 @@ app.use((req, res, next) => {
       next();
     })
     .catch(err => console.log(err));
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use("/admin", adminRoutes);
