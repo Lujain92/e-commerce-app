@@ -1,4 +1,4 @@
-# E-commerce App README
+# E-commerce App
 
 Author: Lujain AL-Jarrah
 
