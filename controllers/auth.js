@@ -40,7 +40,6 @@ exports.postLogin = (req, res, next) => {
         req.flash('error', 'invalid email');
         return res.redirect('/login');
       }
-      console.log(password);
       bcrypt
         .compare(password, user.password)
         .then((doMach) => {
@@ -54,7 +53,7 @@ exports.postLogin = (req, res, next) => {
           }
           req.flash('error', 'invalid password');
 
-          res.redirect('./login');
+          res.redirect('/login');
         })
         .catch();
     })
