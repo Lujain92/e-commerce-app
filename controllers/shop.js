@@ -110,3 +110,50 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 
+exports.postOrder = (req, res, next) => {
+  let fetchedCart;
+  req.user
+    .getCart()
+    .then((cart) => {
+      console.log(cart)
+      fetchedCart = cart;
+      return cart.getProducts();
+    })
+    .then((products) => {
+      return req.user
+        .createOrder()
+        .then((order) => {
+          console.log(order)
+          return order.addProducts(
+            products.map((product) => {
+              product.orderItem = { qy: product.cartItem.qy };
+              console.log(product)
+              return product;
+            })
+          );
+        })
+        .catch((err) => console.log("err",err));
+    })
+    .then((result) => {
+      return fetchedCart.setProducts(null);
+    })
+    .then((result) => {
+      res.redirect('/orders');
+    })
+    .catch((err) => console.log(err));
+};
+
+exports.getOrders = (req, res, next) => {
+  req.user
+    .getOrders({ include: ['products'] })
+    .then((orders) => {
+      res.render('shop/orders', {
+        path: '/orders',
+        pageTitle: 'Your Orders',
+        orders: orders,
+      });
+    })
+    .catch((err) => console.log(err));
+};
+
+
